@@ -1,0 +1,7 @@
+{
+    "eslint.format.enable": true,
+    "[javascript]": {
+        "editor.maxTokenizationLineLength": 2500,
+        "editor.defaultFormatter": "dsznajder.es7-react-js-snippets"
+    }
+}
