@@ -69,7 +69,18 @@ const fileUploadAPI = {
             body: JSON.stringify(body),
             headers: headers
         }).then(res => res.json());
-    }
+    },
+    submitCommand: async (header, body) => {
+        const requestBody = {
+            header: header,
+            body: body
+        }
+        return fetch(url + "/cmd_proc/submit", {
+            method: "POST",
+            body: JSON.stringify(requestBody),
+            headers: headers
+        }).then(res => res.json());
+    },
 }
 
 export default fileUploadAPI;

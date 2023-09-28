@@ -10,25 +10,37 @@ export const InputType = {
 }
 
 
-const SingleCommandPanel = (props)=>{
- 
+const SingleCommandPanel = ({idx, dataList, onChange,hideDeleteBtn,onClickDeleteBtn})=>{
     return (
         <StyledCommandPanel>
             <div className="panelWrap">
                 <div className="num">
-                    {props.idx+1}
+                    {idx+1}
                 </div>
                 <div className="commandContent">
-                    {props.dataList.map(data=>{
+                    {dataList.map(data=>{
                         switch(data.inputType){
                             case InputType.TimeInput:{
-                                return  <TimeInput labelName={data.label}/>;
+                                return  <TimeInput 
+                                            labelName={data.label} 
+                                            value={data.value} 
+                                            onChange={onChange}
+                                        />;
                             }
                             case InputType.DropdownMenu:{
-                                return  <DropdownMenu labelName={data.label} options={data.options}/>
+                                return  <DropdownMenu 
+                                            labelName={data.label} 
+                                            options={data.options}  
+                                            value={data.value}
+                                            onChange={onChange}
+                                        />
                             }
                             case InputType.CommandInput:{
-                                return  <CommandInput labelName={data.label}/>
+                                return  <CommandInput 
+                                            labelName={data.label}
+                                            value={data.value}
+                                            onChange={onChange}
+                                        />
                             }
                             default:{
                                 return <></>
@@ -36,9 +48,9 @@ const SingleCommandPanel = (props)=>{
                         }
                     })} 
                     <div className="btnDiv">
-                        {!props.hideDeleteBtn &&
+                        {!hideDeleteBtn &&
                                 <button type="button" className="btn btn-warning me-1 mb-1"
-                                    onClick={props.onClickDeleteBtn}
+                                    onClick={onClickDeleteBtn}
                                 >
                                     Delete
                                 </button>

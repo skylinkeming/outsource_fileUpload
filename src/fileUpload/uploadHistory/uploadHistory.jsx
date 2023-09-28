@@ -73,7 +73,6 @@ export default function UploadHistory() {
               <thead className="bigTable">
                 <tr className="p-3">
                   <th nowrap="true">EXPAND</th>
-                  <th nowrap="true">RECEIVE TIME</th>
                   <th nowrap="true">USER</th>
                   <th nowrap="true">FILE NAME</th>
                   <th nowrap="true">CREATETIME</th>

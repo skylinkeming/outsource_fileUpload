@@ -16,30 +16,22 @@ const initCommandData={
 }
 
 export default function CommandProcedure(){
-    const [maxDateDisabled, setMaxDateDisabled] = useState(false);
     const [commandList, setCommandList] = useState([initCommandData,]);
     const [form, setForm] = useState({
         originator:"",
         destination:"",
         satellite_name:"",
-        generation_time:"",
         instrument:"",
-        file_name:"",
         startDate:null,
         endDate: null
     });
-    const [symbolOptions, setSymbolOptions] = useState([]);
-    const [srcOptions, setSrcOptions] = useState([]);
-
-    var maxYesterday = '';
-    var minYesterday = DateTime.moment().subtract(1, 'year'); //最早只能選到一年前
-
-
-
+    const [generationTime, setGenerationTime] = useState("");
+    const [fileName, setFileName] = useState("");
+    const [symbolOptions, setSymbolOptions] = useState([{configValue:"", configName:""}]);
+    const [srcOptions, setSrcOptions] = useState([{configValue:"", configName:""}]);
 
     useEffect(()=>{
         fileUploadAPI.getConfigSelect("cmd_proc").then(result=>{
-            console.log(result)
             if(result.resultStatus === 'SUCCESS'){
                 let options1 = []
                 let options2 = []
@@ -50,8 +42,8 @@ export default function CommandProcedure(){
                         options2.push(data)
                     }
                 })
-                setSymbolOptions(options1)
-                setSrcOptions(options2)
+                setSymbolOptions(symbolOptions.concat(options1))
+                setSrcOptions(srcOptions.concat(options2))
             }else{
                 alert(result.message || result.error)
             }
@@ -59,19 +51,10 @@ export default function CommandProcedure(){
 
     },[])
 
-
-
-
-    // const minDateRange = (current) => {
-    //     return current.isAfter( minYesterday );
-    // };
     const maxDateRange = (current) => {
         return current.isAfter( form.startDate );
     };
     const handleStartDateChange = (value) => {
-        setMaxDateDisabled(false);
-        maxYesterday = value;
-        console.log(value.format());
         setForm({
             ...form, startDate:value
         })
@@ -87,7 +70,7 @@ export default function CommandProcedure(){
  
     const addNewCommand = ()=>{
         let newCommandList =[...commandList]
-            newCommandList.push({ num: commandList.length})
+            newCommandList.push(initCommandData)
         setCommandList(newCommandList)
     }
 
@@ -103,6 +86,28 @@ export default function CommandProcedure(){
         }catch(err){
             if (err !== BreakError) throw err;
         }
+
+        fileUploadAPI.submitCommand(
+            {
+                originator:form.originator,
+                destination:form.destination,
+                satellite_name:form.satellite_name,
+                instrument:form.instrument,
+                start_date:form.startDate.format(),
+                end_date:form.endDate.format(),
+            },
+            commandList
+        ).then(result=>{
+            if(result.resultStatus === 'SUCCESS'){
+               setFileName(result.resultObj.header.file_name)
+               setGenerationTime(result.resultObj.header.generation_time)
+            }else{
+                alert(result.message || result.error)
+            }
+        }).catch(err=>{
+            alert(err)
+        })
+
     }
 
     return (
@@ -131,20 +136,20 @@ export default function CommandProcedure(){
                                 ...form, satellite_name:e.target.value
                             })
                         }}/>
-                        <CustomInput label="generation_time" onChange={e=>{
-                            setForm({
-                                ...form, generation_time:e.target.value
-                            })
-                        }}/>
+                        <CustomInput label="generation_time" 
+                            value={generationTime}
+                            onChange={e=>{
+                    
+                            }}
+                        />
                         <CustomInput label="instrument"  onChange={e=>{
                             setForm({
                                 ...form, instrument:e.target.value
                             })
                         }}/>
-                        <CustomInput label="file_name"  onChange={e=>{
-                            setForm({
-                                ...form, file_name:e.target.value
-                            })
+                        <CustomInput label="file_name"  
+                            value={fileName}
+                            onChange={e=>{
                         }}/>
                     </div>
                     <div>
@@ -153,12 +158,12 @@ export default function CommandProcedure(){
                                 <div className="row gx-2">
                                     <div className="col-6">
                                         <div className="label">Start Date</div>
-                                        <DateTime inputProps={{ placeholder: 'Start Date' }} closeOnSelect={true} onChange={ handleStartDateChange } />
+                                        <DateTime value={form.startDate} inputProps={{ placeholder: 'Start Date' }} closeOnSelect={true} onChange={ handleStartDateChange } />
                                         <input className="dateInput" value={form.startDate?form.startDate.format():""} disabled/>
                                     </div>
                                     <div className="col-6">
                                         <div className="label">End Date</div>
-                                        <DateTime isValidDate={ maxDateRange } inputProps={{ placeholder: 'End Date', disabled: maxDateDisabled }} closeOnSelect={true} onChange={ handleEndDateChange }/>
+                                        <DateTime value={form.endDate} isValidDate={ maxDateRange } inputProps={{ placeholder: 'End Date' }} closeOnSelect={true} onChange={ handleEndDateChange }/>
                                         <input className="dateInput" value={form.endDate?form.endDate.format():""} disabled/>
                                     </div>
                                 </div>
@@ -181,16 +186,21 @@ export default function CommandProcedure(){
                     {commandList.map((data, idx)=>{
                         return (
                             <SingleCommandPanel 
+                                idx={idx}
                                 key={idx}  
                                 dataList={[
                                     {label:"time_tag", inputType:InputType.TimeInput, value:data.time_tag, options:[]},
-                                    {label:"symbol", inputType:InputType.DropdownMenu,value:data.symbol, options:symbolOptions},
-                                    {label:"description", inputType:InputType.CommandInput,value:data.description, options:[]},
-                                    {label:"command", inputType:InputType.CommandInput,value:data.command, options:[]},
-                                    {label:"src", inputType:InputType.DropdownMenu,value:data.src, options:srcOptions},
+                                    {label:"symbol", inputType:InputType.DropdownMenu, value:data.symbol, options:symbolOptions},
+                                    {label:"description", inputType:InputType.CommandInput, value:data.description, options:[]},
+                                    {label:"command", inputType:InputType.CommandInput, value:data.command, options:[]},
+                                    {label:"src", inputType:InputType.DropdownMenu, value:data.src, options:srcOptions},
                                 ]}
-                                onChange={(newData)=>{
-
+                                onChange={(updateData)=>{
+                                    console.log(updateData)
+                                    let cloneCommandList = [...commandList]
+                                    let updatedCommand = {...commandList[idx],...updateData};
+                                    cloneCommandList[idx] = updatedCommand;
+                                    setCommandList(cloneCommandList);
                                 }} 
                                 onClickDeleteBtn={()=>{
                                     let targetList = commandList.filter((data, index)=> index!==idx);
@@ -264,12 +274,12 @@ const StyledCustomInput = styled.div`
     }
 `
 
-export const CustomInput = ({label, onChange=(event)=>{}, placeholder})=>{
+export const CustomInput = ({label,value, onChange=(event)=>{}, placeholder})=>{
     return (
         <StyledCustomInput className="inputWrap">
             <div className="inputDiv">
                 <div className="label">{label}</div>
-                <input type="text" className="form-control" placeholder="" onChange={onChange}/>
+                <input value={value} type="text" className="form-control" placeholder="" onChange={onChange}/>
             </div>
         </StyledCustomInput>
     )

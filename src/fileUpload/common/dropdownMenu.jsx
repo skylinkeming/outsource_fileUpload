@@ -1,10 +1,15 @@
 import styled from "styled-components";
 
-const DropdownMenu = ({labelName, options, onChange})=>{
+const DropdownMenu = ({labelName, options, value, onChange})=>{
     return (
         <StyledDropdownMenu>
             <div className="label">{labelName}</div>
-            <select className="form-select">
+            <select className="form-select" 
+                value={value} 
+                onChange={(e)=>{
+                    onChange({[labelName]:e.target.value})
+                }
+            }>
                 {options && options.map(optionData=>{
                     return <option key={optionData.configValue} value={optionData.configValue}>{optionData.configName}</option>
                 })}
