@@ -500,7 +500,7 @@ class App extends React.Component {
 					(this.state.appSidebarEndMobileToggled ? 'app-sidebar-end-mobile-toggled ' : '') + 
 					(this.state.hasScroll ? 'has-scroll ' : '')
 				}>
-					{!this.state.appHeaderNone && (<Header />)}
+					{/* {!this.state.appHeaderNone && (<Header />)} */}
 					{!this.state.appSidebarNone && (<Sidebar />)}
 					{this.state.appSidebarTwo && (<SidebarRight />)}
 					{this.state.appTopMenu && (<TopMenu />)}

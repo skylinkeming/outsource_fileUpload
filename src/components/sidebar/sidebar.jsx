@@ -281,7 +281,7 @@ class Sidebar extends React.Component {
 					<React.Fragment>
 						<div id="sidebar" className={'app-sidebar ' + (appSidebarTransparent ? 'app-sidebar-transparent' : '') + (appSidebarGrid ? 'app-sidebar-grid' : '')}>
 							<PerfectScrollbar className="app-sidebar-content" options={{suppressScrollX: true}}>
-								{!this.context.appSidebarSearch && ( <SidebarProfile /> )}
+								{/* {!this.context.appSidebarSearch && ( <SidebarProfile /> )} */}
 								<SidebarNav />
 								<SidebarMinifyBtn />
 							</PerfectScrollbar>
