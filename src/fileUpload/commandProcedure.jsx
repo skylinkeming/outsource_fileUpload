@@ -87,7 +87,7 @@ export default function CommandProcedure(){
             if (err !== BreakError) throw err;
         }
 
-        fileUploadAPI.submitCommand(
+        fileUploadAPI.submitCommandProcedure(
             {
                 originator:form.originator,
                 destination:form.destination,
@@ -206,7 +206,7 @@ export default function CommandProcedure(){
                                     let targetList = commandList.filter((data, index)=> index!==idx);
                                     setCommandList(targetList);
                                 }}
-                                hideDeleteBtn={commandList.length <= 1}
+                                disableDeleteBtn={commandList.length <= 1}
                             />
                         );
                     })}

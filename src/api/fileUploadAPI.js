@@ -70,12 +70,31 @@ const fileUploadAPI = {
             headers: headers
         }).then(res => res.json());
     },
-    submitCommand: async (header, body) => {
+    submitCommandProcedure: async (header, body) => {
         const requestBody = {
             header: header,
             body: body
         }
         return fetch(url + "/cmd_proc/submit", {
+            method: "POST",
+            body: JSON.stringify(requestBody),
+            headers: headers
+        }).then(res => res.json());
+    },
+    getProcedureName: async () => {
+        const body = {}
+        return fetch(url + "/cmd_proc/select", {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: headers
+        }).then(res => res.json());
+    },
+    submitMissionTimeline: async (header, body) => {
+        const requestBody = {
+            header: header,
+            body: body
+        }
+        return fetch(url + "/mtl/submit", {
             method: "POST",
             body: JSON.stringify(requestBody),
             headers: headers

@@ -1,39 +1,79 @@
+
 import { styled } from "styled-components";
 import DateTime from 'react-datetime';
 import { Panel, PanelBody } from "../components/panel/panel";
-import React,{useState} from 'react'
-import moment from 'moment';
+import React,{useEffect, useState} from 'react'
 import SingleCommandPanel from "./common/singleCommandPanel";
 import { InputType } from "./common/singleCommandPanel";
+import fileUploadAPI from "../api/fileUploadAPI";
+
+const initCommandData={
+    UTC:"",
+    action:"",
+    duration:"",
+    quaternion_1:"",
+    quaternion_2:"",
+    quaternion_3:"",
+    quaternion_4:"",
+    procedure_name:""
+}
+
+const initOption = {
+    configValue:"", 
+    configName:"",
+}
 
 
-export default function MissionTimeline(){
-    const [maxDateDisabled, setMaxDateDisabled] = useState(false);
-    const [commandList, setCommandList] = useState([{num:0}]);
+
+export default function CommandProcedure(){
+    const [commandList, setCommandList] = useState([initCommandData,]);
     const [form, setForm] = useState({
         originator:"",
         destination:"",
         satellite_name:"",
-        generation_time:"",
         instrument:"",
-        file_name:"",
         startDate:null,
         endDate: null
     });
-    var maxYesterday = '';
-    var minYesterday = DateTime.moment().subtract(1, 'year'); //最早只能選到一年前
+    const [generationTime, setGenerationTime] = useState("");
+    const [fileName, setFileName] = useState("");
+    const [actionOptions, setActionOptions] = useState([initOption]);
+    const [procedureNameOptions, setProcedureNameOptions] = useState([initOption]);
 
+    useEffect(()=>{
+        fileUploadAPI.getConfigSelect("mtl").then(result=>{
+            if(result.resultStatus === 'SUCCESS'){
+                let options1 = []
+                Object.values(result.resultObj).forEach(data=>{
+                    if(data.configSubtype==='action'){
+                        options1.push(data)
+                    } 
+                })
+                setActionOptions([initOption].concat(options1))   
+            }else{
+                alert(result.message || result.error)
+            }
+        }).catch(alert);
+        fileUploadAPI.getProcedureName().then(result=>{
+            if(result.resultStatus === 'SUCCESS'){
+                let convertedOptions = result.resultObj.map(data=>{
+                    return {
+                        configName:data.content,
+                        configValue:data.content
+                    }
+                })
+                setProcedureNameOptions([initOption].concat(convertedOptions))
+            }else{
+                alert(result.message || result.error)
+            }
+        }).catch(alert);
 
-    // const minDateRange = (current) => {
-    //     return current.isAfter( minYesterday );
-    // };
+    },[])
+
     const maxDateRange = (current) => {
         return current.isAfter( form.startDate );
     };
     const handleStartDateChange = (value) => {
-        setMaxDateDisabled(false);
-        maxYesterday = value;
-        console.log(value.format());
         setForm({
             ...form, startDate:value
         })
@@ -49,7 +89,7 @@ export default function MissionTimeline(){
  
     const addNewCommand = ()=>{
         let newCommandList =[...commandList]
-            newCommandList.push({ num: commandList.length})
+            newCommandList.push(initCommandData)
         setCommandList(newCommandList)
     }
 
@@ -65,12 +105,34 @@ export default function MissionTimeline(){
         }catch(err){
             if (err !== BreakError) throw err;
         }
+
+        fileUploadAPI.submitMissionTimeline(
+            {
+                originator:form.originator,
+                destination:form.destination,
+                satellite_name:form.satellite_name,
+                instrument:form.instrument,
+                start_date:form.startDate.format(),
+                end_date:form.endDate.format(),
+            },
+            commandList
+        ).then(result=>{
+            if(result.resultStatus === 'SUCCESS'){
+               setFileName(result.resultObj.header.file_name)
+               setGenerationTime(result.resultObj.header.generation_time)
+            }else{
+                alert(result.message || result.error)
+            }
+        }).catch(err=>{
+            alert(err)
+        })
+
     }
 
     return (
-        <StyledMissionTimeline>
+        <StyledCommandProcedure>
             <Panel>
-                <PanelBody className="p-0">
+                <PanelBody className="p-0 topPanel">
                     <p className="mb-3 title">
                         Mission Timeline
                     </p>
@@ -93,21 +155,17 @@ export default function MissionTimeline(){
                                 ...form, satellite_name:e.target.value
                             })
                         }}/>
-                        <CustomInput label="generation_time" onChange={e=>{
-                            setForm({
-                                ...form, generation_time:e.target.value
-                            })
-                        }}/>
+                        <CustomInput label="generation_time" 
+                            value={generationTime}
+                        />
                         <CustomInput label="instrument"  onChange={e=>{
                             setForm({
                                 ...form, instrument:e.target.value
                             })
                         }}/>
-                        <CustomInput label="file_name"  onChange={e=>{
-                            setForm({
-                                ...form, file_name:e.target.value
-                            })
-                        }}/>
+                        <CustomInput label="file_name"  
+                            value={fileName}
+                        />
                     </div>
                     <div>
                         <div className="form-group calendar">
@@ -115,12 +173,12 @@ export default function MissionTimeline(){
                                 <div className="row gx-2">
                                     <div className="col-6">
                                         <div className="label">Start Date</div>
-                                        <DateTime inputProps={{ placeholder: 'Start Date' }} closeOnSelect={true} onChange={ handleStartDateChange } />
+                                        <DateTime value={form.startDate} inputProps={{ placeholder: 'Start Date' }} closeOnSelect={true} onChange={ handleStartDateChange } />
                                         <input className="dateInput" value={form.startDate?form.startDate.format():""} disabled/>
                                     </div>
                                     <div className="col-6">
                                         <div className="label">End Date</div>
-                                        <DateTime isValidDate={ maxDateRange } inputProps={{ placeholder: 'End Date', disabled: maxDateDisabled }} closeOnSelect={true} onChange={ handleEndDateChange }/>
+                                        <DateTime value={form.endDate} isValidDate={ maxDateRange } inputProps={{ placeholder: 'End Date' }} closeOnSelect={true} onChange={ handleEndDateChange }/>
                                         <input className="dateInput" value={form.endDate?form.endDate.format():""} disabled/>
                                     </div>
                                 </div>
@@ -139,49 +197,47 @@ export default function MissionTimeline(){
                     </div>
                     <div className="addBtn">
                         <button type="button" className="btn btn-white me-1 mb-1" onClick={addNewCommand}>+ Input New</button>
-                    </div>
-
-                    {/* <TimeInput labelName={"UTC"}/>
-                    <DropdownMenu/>
-                    <TimeInput labelName={"duration"}/>
-                    <CommandInput labelName="question_1"/>
-                    <CommandInput labelName="question_2"/>
-                    <CommandInput labelName="question_3"/>
-                    <CommandInput labelName="question_4"/> */}
+                    </div>                   
                     {commandList.map((data, idx)=>{
                         return (
                             <SingleCommandPanel 
-                                key={data.num+idx} idx={idx} 
+                                idx={idx}
+                                key={idx}  
                                 dataList={[
-                                    {label:"UTC", inputType:InputType.TimeInput},
-                                    {label:"action", inputType:InputType.DropdownMenu},
-                                    {label:"duration", inputType:InputType.TimeInput},
-                                    {label:"question_1", inputType:InputType.CommandInput},
-                                    {label:"question_2", inputType:InputType.CommandInput},
-                                    {label:"question_3", inputType:InputType.CommandInput},
-                                    {label:"question_4", inputType:InputType.CommandInput},
-                                    {label:"procedure_name", inputType:InputType.DropdownMenu},
-                                ]}
-                                onChange={(newData)=>{
+                                    {label:"UTC", inputType:InputType.TimeInput, value:data.UTC, options:[]},
+                                    {label:"action", inputType:InputType.DropdownMenu, value:data.action, options:actionOptions},
+                                    {label:"duration", inputType:InputType.TimeInput, value:data.duration, options:[]},
+                                    {label:"quaternion_1", inputType:InputType.CommandInput, value:data.quaternion_1, options:[]},
+                                    {label:"quaternion_2", inputType:InputType.CommandInput, value:data.quaternion_2, options:[]},
+                                    {label:"quaternion_3", inputType:InputType.CommandInput, value:data.quaternion_3, options:[]},
+                                    {label:"quaternion_4", inputType:InputType.CommandInput, value:data.quaternion_4, options:[]},
+                                    {label:"procedure_name", inputType:InputType.DropdownMenu, value:data.symbol, options:procedureNameOptions},
 
+                                ]}
+                                onChange={(updateData)=>{
+                                    console.log(updateData)
+                                    let cloneCommandList = [...commandList]
+                                    let updatedCommand = {...commandList[idx],...updateData};
+                                    cloneCommandList[idx] = updatedCommand;
+                                    setCommandList(cloneCommandList);
                                 }} 
                                 onClickDeleteBtn={()=>{
                                     let targetList = commandList.filter((data, index)=> index!==idx);
                                     setCommandList(targetList);
                                 }}
-                                hideDeleteBtn={commandList.length<=1}
+                                disableDeleteBtn={commandList.length <= 1}
                             />
                         );
                     })}
                 </PanelBody>
             </Panel>
-        </StyledMissionTimeline>
+        </StyledCommandProcedure>
     )
 
 }
 
 
-const StyledMissionTimeline = styled.div`
+const StyledCommandProcedure = styled.div`
     .title {
         font-weight:bold;
         font-size:20px;
@@ -220,6 +276,9 @@ const StyledMissionTimeline = styled.div`
     }
 `;
 
+
+
+
 const StyledCustomInput = styled.div`
     margin-bottom:5px;
     display:inline-block;
@@ -234,21 +293,18 @@ const StyledCustomInput = styled.div`
     }
 `
 
-
-
-
-
-
-export const CustomInput = ({label, onChange=(event)=>{}, placeholder})=>{
+export const CustomInput = ({label,value, onChange=(event)=>{}, placeholder})=>{
     return (
         <StyledCustomInput className="inputWrap">
             <div className="inputDiv">
                 <div className="label">{label}</div>
-                <input type="text" className="form-control" placeholder="" onChange={onChange}/>
+                <input value={value} type="text" className="form-control" placeholder="" onChange={onChange}/>
             </div>
         </StyledCustomInput>
     )
 }
+
+
 
 
 

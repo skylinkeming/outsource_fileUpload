@@ -10,7 +10,7 @@ export const InputType = {
 }
 
 
-const SingleCommandPanel = ({idx, dataList, onChange,hideDeleteBtn,onClickDeleteBtn})=>{
+const SingleCommandPanel = ({idx, dataList, onChange,disableDeleteBtn,onClickDeleteBtn})=>{
     return (
         <StyledCommandPanel>
             <div className="panelWrap">
@@ -22,6 +22,7 @@ const SingleCommandPanel = ({idx, dataList, onChange,hideDeleteBtn,onClickDelete
                         switch(data.inputType){
                             case InputType.TimeInput:{
                                 return  <TimeInput 
+                                            key={data.label}
                                             labelName={data.label} 
                                             value={data.value} 
                                             onChange={onChange}
@@ -29,6 +30,7 @@ const SingleCommandPanel = ({idx, dataList, onChange,hideDeleteBtn,onClickDelete
                             }
                             case InputType.DropdownMenu:{
                                 return  <DropdownMenu 
+                                            key={data.label}
                                             labelName={data.label} 
                                             options={data.options}  
                                             value={data.value}
@@ -37,6 +39,7 @@ const SingleCommandPanel = ({idx, dataList, onChange,hideDeleteBtn,onClickDelete
                             }
                             case InputType.CommandInput:{
                                 return  <CommandInput 
+                                            key={data.label}
                                             labelName={data.label}
                                             value={data.value}
                                             onChange={onChange}
@@ -48,13 +51,14 @@ const SingleCommandPanel = ({idx, dataList, onChange,hideDeleteBtn,onClickDelete
                         }
                     })} 
                     <div className="btnDiv">
-                        {!hideDeleteBtn &&
-                                <button type="button" className="btn btn-warning me-1 mb-1"
-                                    onClick={onClickDeleteBtn}
-                                >
-                                    Delete
-                                </button>
-                        }
+                        <button type="button" className="btn btn-warning me-1 mb-1" style={{
+                            opacity:disableDeleteBtn?"0.5":"1",
+                            pointerEvents:disableDeleteBtn?"none":"initial"
+                        }}
+                            onClick={onClickDeleteBtn}
+                        >
+                            Delete
+                        </button>
                     </div>
                 </div>
             </div>
