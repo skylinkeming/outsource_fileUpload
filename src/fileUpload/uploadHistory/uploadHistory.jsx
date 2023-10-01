@@ -3,6 +3,7 @@ import { Panel, PanelBody } from "../../components/panel/panel";
 import React, { useEffect, useState } from "react";
 import SingleRow from "./singleRow";
 import fileUploadAPI from "../../api/fileUploadAPI";
+import SortIcon from "../common/sortIcon";
 
 export default function UploadHistory() {
   const [file, setFile] = useState();
@@ -73,10 +74,18 @@ export default function UploadHistory() {
               <thead className="bigTable">
                 <tr className="p-3">
                   <th nowrap="true">EXPAND</th>
-                  <th nowrap="true">USER</th>
-                  <th nowrap="true">FILE NAME</th>
-                  <th nowrap="true">CREATETIME</th>
-                  <th nowrap="true">SIZE</th>
+                  <th nowrap="true">USER
+                    <SortIcon dataList={resultList} dataField={"creator"} setFunction={setResultList}/>
+                  </th>
+                  <th nowrap="true">FILE NAME
+                    <SortIcon dataList={resultList} dataField={"fileName"} setFunction={setResultList}/>
+                  </th>
+                  <th nowrap="true">CREATETIME
+                    <SortIcon dataList={resultList} dataField={"createTime"} setFunction={setResultList}/>
+                  </th>
+                  <th nowrap="true">SIZE
+                    <SortIcon dataList={resultList} dataField={"size"} setFunction={setResultList}/>
+                  </th>
                 </tr>
               </thead>
               <tbody>

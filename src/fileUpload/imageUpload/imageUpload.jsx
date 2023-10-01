@@ -4,12 +4,13 @@ import { useState } from "react";
 import Loader from "../common/loader";
 import fileUploadAPI from "../../api/fileUploadAPI";
 import UploadStatus from "./uploadStatus";
+import SortIcon from "../common/sortIcon";
 
 const initUploadData = {
     fileName:"", 
     fileType:"", 
     user:"", 
-    channelList:[{configName:"", configValue:""}], 
+    channelList:[{configName:"請選擇channel", configValue:""}], 
     selectedChannel:""
 }
 
@@ -23,6 +24,8 @@ const initUploadStatus = {
 export default function ImageUpload() {
     const [file, setFile] = useState();
     const [loading, setLoading] = useState(false);
+    const [showSubmitBtn, setShowSubmitBtn] = useState(false);
+    const [showStatusBtn, setShowStatusBtn] = useState(false);
     const [uploadData, setUploadData] = useState(initUploadData)
     const [uploadStatus, setUploadStatus] = useState(initUploadStatus)
     const [splitFileList, setSplitFileList] = useState([]);
@@ -35,6 +38,7 @@ export default function ImageUpload() {
         }
         setUploadData(initUploadData)
         setLoading(true)
+        setShowSubmitBtn(false);
         fileUploadAPI.uploadFile(file).then(result=>{
             setLoading(false)
             if(result.resultStatus === 'SUCCESS'){
@@ -56,6 +60,10 @@ export default function ImageUpload() {
     }
 
     const clickPartitionBtn = ()=>{
+        if(!uploadData.fileName){
+            alert("請上傳檔案");
+            return;
+        }
         if(!uploadData.selectedChannel){
             alert("請選擇channel")
             return;
@@ -66,6 +74,7 @@ export default function ImageUpload() {
             setLoading(false)
             if(result.resultStatus === 'SUCCESS'){
                 setSplitFileList(result.resultObj.fileList)
+                setShowSubmitBtn(true);
             }else{
                 alert(result.message || result.error)
             }
@@ -77,14 +86,18 @@ export default function ImageUpload() {
 
     const clickSubmitBtn = ()=>{
         setLoading(true)
+        setShowStatusBtn(false)
         fileUploadAPI.notifyUpload(uploadData.imageId).then(result=>{
             setLoading(false)
             if(result.resultStatus === 'SUCCESS'){
+                setShowStatusBtn(false)
                 setUploadStatus({
                     ...result.resultObj
                 })
             }else{
                 alert(result.message || result.error)
+                setShowStatusBtn(true);
+                setShowUploadStatus(true);
                 setUploadStatus({
                     ...result.resultObj, statusInfo:result.message || result.error
                 })
@@ -100,12 +113,13 @@ export default function ImageUpload() {
         setShowUploadStatus(!showUploadStatus)
     }
 
+
+
     return (
         <StyledImageUpload>
             {loading && <Loader/>}
-             <UploadStatus {...uploadStatus} show={showUploadStatus}/>
             <Panel>
-                <PanelBody className="p-0">
+                <PanelBody className="p-0 topPanel">
                     <p className="mb-0 p-3 title">
                         Image Upload
                     </p>
@@ -121,63 +135,68 @@ export default function ImageUpload() {
                         <button type="button" className="btn btn-default me-1 mb-1" onClick={clickUploadBtn}>upload</button>
                     </p>
                     {uploadData.fileName &&
-                        <div className="p-3 detail">
-                            File Details:
-                            <div>
-                                File Name: {uploadData.fileName}
+                        <>
+                            <div className="p-3 detail">
+                                File Details:
+                                <div>
+                                    File Name: {uploadData.fileName}
+                                </div>
+                                <div>
+                                    File Type: {uploadData.fileType}
+                                </div>
+                            </div>     
+                            <div className="p-3 select">
+                                channel
+                                <select className="form-select"
+                                    value={uploadData.selectedChannel}
+                                    onChange={e=>{ 
+                                        setUploadData({
+                                            ...uploadData,
+                                            selectedChannel: e.target.value
+                                        })
+                                    }
+                                }>
+                                    {uploadData.channelList.map((channel,idx)=>{
+                                        return (
+                                            <option 
+                                                key={channel.configValue+idx} 
+                                                value={channel.configValue}
+                                            >
+                                                {channel && channel.configName? channel.configName : "" }
+                                            </option>
+                                        )
+                                    })}
+                                </select>
                             </div>
-                            <div>
-                                File Type: {uploadData.fileType}
-                            </div>
-                        </div>
+                            <div className="table-responsive p-3">
+                                <table className="table">
+                                    <thead>
+                                        <tr className="p-3">
+                                        <th nowrap="true">File Name</th>
+                                        <th nowrap="true">User</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="p-3"><td>{uploadData.fileName}</td><td>{uploadData.user}</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>  
+                        </>
                     }
-                    <div className="p-3 select">
-                        channel
-                        <select className="form-select"
-                            value={uploadData.selectedChannel}
-                            onChange={e=>{ 
-                                setUploadData({
-                                    ...uploadData,
-                                    selectedChannel: e.target.value
-                                })
-                            }
-                        }>
-                            {uploadData.channelList.map((channel,idx)=>{
-                                return (
-                                    <option 
-                                        key={channel.configValue+idx} 
-                                        value={channel.configValue}
-                                    >
-                                        {channel && channel.configName? channel.configName : "" }
-                                    </option>
-                                )
-                            })}
-                        </select>
-                    </div>
-                    <div className="table-responsive p-3">
-                        <table className="table">
-                            <thead>
-                                <tr className="p-3">
-                                <th nowrap="true">File Name</th>
-                                <th nowrap="true">User</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className="p-3"><td>{uploadData.fileName}</td><td>{uploadData.user}</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
                     <div className="btnDiv p-3">
-                        {/* {uploadStatus.statusInfo && */}
+                        {showStatusBtn && 
                             <button type="button" className="btn btn-primary me-3 mb-1" onClick={clickUploadStatusFromLNM}>upload status from LNM</button>
-                        {/* } */}
-                        <button type="button" className="btn btn-green me-3 mb-1" onClick={clickSubmitBtn}>Submit</button>
+                        }
+                        {showSubmitBtn && 
+                            <button type="button" className="btn btn-green me-3 mb-1" onClick={clickSubmitBtn}>Submit</button>
+                        }
                         <button type="button" className="btn btn-info me-1 mb-1" onClick={clickPartitionBtn}>Partition</button>
                     </div>
                 </PanelBody>
             </Panel>
             <Panel>
-                <PanelBody className="p-3">
+                <PanelBody className="p-3 partitionResult">
+                    <UploadStatus {...uploadStatus} show={showUploadStatus} onClickOutside={()=>{ setShowUploadStatus(false)}}/>
                     <p className="mb-3 title">
                         Partition Information
                     </p>
@@ -185,11 +204,21 @@ export default function ImageUpload() {
                         <table className="table table-striped">
                             <thead>
                                 <tr className="p-3">
-                                <th nowrap="true">User</th>
-                                <th nowrap="true">FILE NAME</th>
-                                <th nowrap="true">CREATE TIME</th>
-                                <th nowrap="true">Size</th>
-                                <th nowrap="true">CHANNEL</th>
+                                <th nowrap="true">User 
+                                    <SortIcon dataList={splitFileList} dataField={"creator"} setFunction={setSplitFileList}/>    
+                                </th>
+                                <th nowrap="true">FILE NAME 
+                                    <SortIcon dataList={splitFileList} dataField={"fileName"} setFunction={setSplitFileList}/>
+                                </th>
+                                <th nowrap="true">CREATE TIME 
+                                    <SortIcon dataList={splitFileList} dataField={"createTime"} setFunction={setSplitFileList}/>
+                                </th>
+                                <th nowrap="true">Size 
+                                    <SortIcon dataList={splitFileList} dataField={"size"} setFunction={setSplitFileList}/>
+                                </th>
+                                <th nowrap="true">CHANNEL
+                                    <SortIcon dataList={splitFileList} dataField={"channel"} setFunction={setSplitFileList}/>
+                                </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -248,5 +277,12 @@ const StyledImageUpload = styled.div`
     }
     .btnDiv {
         text-align:right;
+    }
+    .partitionResult {
+        position:relative;
+        min-height: 300px;
+    }
+    i {
+        cursor:pointer;
     }
 `

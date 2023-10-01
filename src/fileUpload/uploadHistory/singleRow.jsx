@@ -53,7 +53,7 @@ const SingleRow = ({imageId, receiveTime, user, fileName, createTime, size, isEx
                     <td colSpan={6}>
                         <div className="detailTableWrap">
                             {dataList.length>0?
-                                <DetailTable dataList={dataList}/>:
+                                <DetailTable dataList={dataList} setFunction={setDataList}/>:
                                 <div className="tip">{loading?"loading...":"---暫無資料---"}</div>
                             }
                         </div>
