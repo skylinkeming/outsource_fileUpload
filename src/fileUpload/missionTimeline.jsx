@@ -62,10 +62,7 @@ export default function CommandProcedure(){
                         configValue:data.value
                     }
                 })
-                setProcedureNameOptions([{
-                    configValue:"", 
-                    configName:"請選擇procedure name",
-                }].concat(convertedOptions))
+                setProcedureNameOptions([initOption].concat(convertedOptions))
             }else{
                 alert(result.message || result.error)
             }
@@ -109,6 +106,11 @@ export default function CommandProcedure(){
             if (err !== BreakError) throw err;
         }
 
+        let cmdInfoIds = [];
+        commandList.forEach(cmd=>{
+            cmdInfoIds.push(cmd.procedureNameVal)
+        })
+    
         fileUploadAPI.submitMissionTimeline(
             {
                 originator:form.originator,
@@ -118,7 +120,8 @@ export default function CommandProcedure(){
                 start_date:form.startDate.format(),
                 end_date:form.endDate.format(),
             },
-            commandList
+            commandList,
+            cmdInfoIds
         ).then(result=>{
             if(result.resultStatus === 'SUCCESS'){
                setFileName(result.resultObj.header.file_name)

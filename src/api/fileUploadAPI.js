@@ -89,10 +89,11 @@ const fileUploadAPI = {
             headers: headers
         }).then(res => res.json());
     },
-    submitMissionTimeline: async (header, body) => {
+    submitMissionTimeline: async (header, body, cmdInfoIds) => {
         const requestBody = {
             header: header,
-            body: body
+            body: body,
+            cmdInfoIds:cmdInfoIds
         }
         return fetch(url + "/mtl/submit", {
             method: "POST",

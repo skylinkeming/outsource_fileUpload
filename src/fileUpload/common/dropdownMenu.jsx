@@ -7,7 +7,16 @@ const DropdownMenu = ({labelName, options, value, onChange})=>{
             <select className="form-select" 
                 value={value} 
                 onChange={(e)=>{
-                    onChange({[labelName]:e.target.value})
+                    if(labelName === "procedure_name"){
+                        onChange({
+                            [labelName]:e.target[e.target.selectedIndex].text,
+                            procedureNameVal:e.target.value
+                        })
+                    }else {
+                        onChange({
+                            [labelName]:e.target.value,
+                        })
+                    }
                 }
             }>
                 {options && options.map((optionData, idx)=>{
