@@ -20,7 +20,7 @@ const initCommandData={
 
 const initOption = {
     configValue:"", 
-    configName:"",
+    configName:"請選擇",
 }
 
 
@@ -59,10 +59,13 @@ export default function CommandProcedure(){
                 let convertedOptions = result.resultObj.map(data=>{
                     return {
                         configName:data.content,
-                        configValue:data.content
+                        configValue:data.value
                     }
                 })
-                setProcedureNameOptions([initOption].concat(convertedOptions))
+                setProcedureNameOptions([{
+                    configValue:"", 
+                    configName:"請選擇procedure name",
+                }].concat(convertedOptions))
             }else{
                 alert(result.message || result.error)
             }

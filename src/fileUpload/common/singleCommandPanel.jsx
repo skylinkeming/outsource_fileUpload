@@ -18,7 +18,7 @@ const SingleCommandPanel = ({idx, dataList, onChange,disableDeleteBtn,onClickDel
                     {idx+1}
                 </div>
                 <div className="commandContent">
-                    {dataList.map(data=>{
+                    {dataList.map((data)=>{
                         switch(data.inputType){
                             case InputType.TimeInput:{
                                 return  <TimeInput 

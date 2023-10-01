@@ -10,8 +10,8 @@ const DropdownMenu = ({labelName, options, value, onChange})=>{
                     onChange({[labelName]:e.target.value})
                 }
             }>
-                {options && options.map(optionData=>{
-                    return <option key={optionData.configValue} value={optionData.configValue}>{optionData.configName}</option>
+                {options && options.map((optionData, idx)=>{
+                    return <option key={optionData.configValue+idx} value={optionData.configValue}>{optionData.configName}</option>
                 })}
             </select>
         </StyledDropdownMenu>
