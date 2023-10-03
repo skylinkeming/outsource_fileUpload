@@ -1,28 +1,25 @@
 import { styled } from "styled-components";
 import DateTime from 'react-datetime';
 import { Panel, PanelBody } from "../components/panel/panel";
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import 'react-quill/dist/quill.snow.css';
 import 'react-datetime/css/react-datetime.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import fileUploadAPI from "../api/fileUploadAPI";
 
 export default function SOHDisplay(){
     const [maxDateDisabled, setMaxDateDisabled] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const menuBtnArr = ['DSP1 PS','DSP1 PL', 'DSP2 PL', 'DSP2 PS', 'DSP3 PS', 'DSP3 PL', 'DSP4 PS', 'DSP4 PL']
     const [clickedBtn, setClickedBtn]= useState("");
-    const [tableData, setTableData] = useState([]);
+    const [dataList, setDataList] = useState([]);
+    const [apiInput, setApiInput] = useState({
+        dsp:1,
+        sohType:"PS"
+    })
     var maxYesterday = '';
     var minYesterday = DateTime.moment().subtract(1, 'year'); //最早只能選到一年前
-    const dataList1 =  [
-        {receiveTime:"2023-9-19 16:04:59", timeStamp:"2023-03-10", element:"PS TEMP", value:"0"},
-        {receiveTime:"2023-9-22 16:04:59", timeStamp:"2023-04-10", element:"PS TEMP", value:"1"},
-    ]
-    const dataList2 =  [
-        {receiveTime:"2023-9-11 12:04:59", timeStamp:"2023-03-10", element:"PL TEMP", value:"0"},
-        {receiveTime:"2023-9-17 15:04:59", timeStamp:"2023-04-10", element:"PT TEMP", value:"1"},
-        {receiveTime:"2023-9-17 15:04:59", timeStamp:"2023-04-10", element:"PT TEMP", value:"1"},
-    ]
+
 
     const minDateRange = (current) => {
         return current.isAfter( minYesterday );
@@ -34,6 +31,16 @@ export default function SOHDisplay(){
         setMaxDateDisabled(false);
         maxYesterday = value;
     };
+
+    useEffect(()=>{
+        fileUploadAPI.getSOHInfo(apiInput.sohType, apiInput.dsp).then(result=>{
+            if(result.resultStatus === 'SUCCESS'){
+                setDataList(result.resultObj)
+             }else{
+                 alert(result.message || result.error)
+             }
+        }).catch(alert)
+    },[apiInput])
  
     return (
         <StyledSOHDisplay> 
@@ -74,11 +81,10 @@ export default function SOHDisplay(){
                                     className={menuItem===clickedBtn?"menuBtn btn btn-primary":"menuBtn btn btn-white"}
                                     onClick={()=>{
                                         setClickedBtn(menuItem)
-                                        if(idx%2===0){//測試用 串API後會刪除
-                                            setTableData(dataList1)
-                                        }else {
-                                            setTableData(dataList2)
-                                        }
+                                        setApiInput({
+                                            dsp:menuItem.split(" ")[0].substring(3),
+                                            sohType:menuItem.split(" ")[1]
+                                        });
                                     }}
                                 >
                                     {menuItem}
@@ -95,7 +101,7 @@ export default function SOHDisplay(){
                         <div className="table-name title">
                             TID RX STATISTIC TABLE
                         </div>
-                        <div className="entryNum">Entry Num: {tableData.length}</div>
+                        <div className="entryNum">Entry Num: {dataList.length}</div>
                         <table className="table table-sm">
                             <thead>
                                 <tr className="p-3">
@@ -106,9 +112,9 @@ export default function SOHDisplay(){
                                 </tr>
                             </thead>
                             <tbody>
-                                {tableData.map((data, i)=>{
+                                {dataList.map((data, i)=>{
                                     return (
-                                        <tr className="p-3">
+                                        <tr className="p-3" key={i}>
                                             <td>{data.receiveTime}</td>
                                             <td>{data.timeStamp}</td>
                                             <td>{data.element}</td>

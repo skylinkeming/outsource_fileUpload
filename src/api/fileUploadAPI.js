@@ -101,6 +101,17 @@ const fileUploadAPI = {
             headers: headers
         }).then(res => res.json());
     },
+    getSOHInfo: async (sohType,dsp) => {
+        const requestBody = {
+            sohType: sohType,
+            dsp: dsp,
+        }
+        return fetch(url + "/soh/info", {
+            method: "POST",
+            body: JSON.stringify(requestBody),
+            headers: headers
+        }).then(res => res.json());
+    },
 }
 
 export default fileUploadAPI;

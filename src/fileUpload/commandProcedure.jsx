@@ -55,15 +55,25 @@ export default function CommandProcedure(){
         return current.isAfter( form.startDate );
     };
     const handleStartDateChange = (value) => {
-        setForm({
-            ...form, startDate:value
-        })
+       try {
+            value.format()
+            setForm({
+                ...form, startDate:value
+            })
+       } catch(err){
+            
+       }
     };
 
     const handleEndDateChange = (value)=>{
-        setForm({
-            ...form, endDate:value
-        })
+        try {
+            value.format()
+            setForm({
+                ...form, endDate:value
+            })
+       } catch(err){
+            
+       }
     }
 
 
@@ -85,6 +95,7 @@ export default function CommandProcedure(){
             })
         }catch(err){
             if (err !== BreakError) throw err;
+            return;
         }
 
         fileUploadAPI.submitCommandProcedure(
@@ -159,12 +170,12 @@ export default function CommandProcedure(){
                                     <div className="col-6">
                                         <div className="label">Start Date</div>
                                         <DateTime value={form.startDate} inputProps={{ placeholder: 'Start Date' }} closeOnSelect={true} onChange={ handleStartDateChange } />
-                                        <input className="dateInput" value={form.startDate?form.startDate.format():""} disabled/>
+                                        <input className="dateInput" value={form.startDate? form.startDate.format():""} disabled/>
                                     </div>
                                     <div className="col-6">
                                         <div className="label">End Date</div>
                                         <DateTime value={form.endDate} isValidDate={ maxDateRange } inputProps={{ placeholder: 'End Date' }} closeOnSelect={true} onChange={ handleEndDateChange }/>
-                                        <input className="dateInput" value={form.endDate?form.endDate.format():""} disabled/>
+                                        <input className="dateInput" value={form.endDate? form.endDate.format():""} disabled/>
                                     </div>
                                 </div>
                             </div>

@@ -73,18 +73,28 @@ export default function CommandProcedure(){
     const maxDateRange = (current) => {
         return current.isAfter( form.startDate );
     };
+
     const handleStartDateChange = (value) => {
-        setForm({
-            ...form, startDate:value
-        })
-    };
-
-    const handleEndDateChange = (value)=>{
-        setForm({
-            ...form, endDate:value
-        })
-    }
-
+        try {
+             value.format()
+             setForm({
+                 ...form, startDate:value
+             })
+        } catch(err){
+             
+        }
+     };
+ 
+     const handleEndDateChange = (value)=>{
+         try {
+             value.format()
+             setForm({
+                 ...form, endDate:value
+             })
+        } catch(err){
+             
+        }
+     }
 
  
     const addNewCommand = ()=>{
@@ -104,6 +114,7 @@ export default function CommandProcedure(){
             })
         }catch(err){
             if (err !== BreakError) throw err;
+            return;
         }
 
         let cmdInfoIds = [];
