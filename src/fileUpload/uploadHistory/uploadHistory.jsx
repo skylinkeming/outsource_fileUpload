@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import SingleRow from "./singleRow";
 import fileUploadAPI from "../../api/fileUploadAPI";
 import SortIcon from "../common/sortIcon";
+import Warning from "../common/warning";
 
 export default function UploadHistory() {
   const [file, setFile] = useState();
@@ -20,12 +21,12 @@ export default function UploadHistory() {
             if(result.resultStatus === 'SUCCESS'){
                 setResultList(result.resultObj.list)
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             
             }
           })
           .catch((err) => {
-            alert(err);
+            Warning(err);
           });
     }
   }, [searchword]);
@@ -37,11 +38,11 @@ export default function UploadHistory() {
             if(result.resultStatus === 'SUCCESS'){
                 setResultList(result.resultObj.list)
             }else{
-                alert(result.message || result.error)
+              Warning(result.message || result.error)
             }
         })
         .catch((err) => {
-        alert(err);
+          Warning(err);
     });
   }
 

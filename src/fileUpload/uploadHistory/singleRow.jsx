@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DetailTable from "./detailTable";
 import fileUploadAPI from "../../api/fileUploadAPI";
+import Warning from "../common/warning";
 
 const SingleRow = ({imageId, receiveTime, user, fileName, createTime, size, isExpanded, onClickBtn})=>{
     const [dataList, setDataList] = useState([]);
@@ -20,11 +21,11 @@ const SingleRow = ({imageId, receiveTime, user, fileName, createTime, size, isEx
             if(result.resultStatus === 'SUCCESS'){
                 setDataList(result.resultObj.list)
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             }
         }).catch(err=>{
             setLoading(false)
-            alert(err)
+            Warning(err)
         })
     }
 

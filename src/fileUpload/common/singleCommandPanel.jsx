@@ -11,6 +11,7 @@ export const InputType = {
 
 
 const SingleCommandPanel = ({idx, dataList, onChange,disableDeleteBtn,onClickDeleteBtn})=>{
+    
     return (
         <StyledCommandPanel>
             <div className="panelWrap">
@@ -43,6 +44,7 @@ const SingleCommandPanel = ({idx, dataList, onChange,disableDeleteBtn,onClickDel
                                             labelName={data.label}
                                             value={data.value}
                                             onChange={onChange}
+                                            options={data.options}
                                         />
                             }
                             default:{
@@ -70,6 +72,9 @@ const SingleCommandPanel = ({idx, dataList, onChange,disableDeleteBtn,onClickDel
 const StyledCommandPanel = styled.div`
     display:inline-block;
     width:calc(50% - 5px);
+    @media (max-width:960px){
+        width:100%;
+    }
     .panelWrap {
         display:flex;
         align-items: stretch;
@@ -104,9 +109,27 @@ const StyledCommandPanel = styled.div`
             }
             .inputDiv {
                 width: 100%;
+                position:relative;
             }
             input {
                 width:100%;
+            }
+
+            .options {
+                background: white;
+                border: 1px solid;
+                position: absolute;
+                width: 100%;
+                max-height: 200px;
+                overflow: auto;
+                z-index:2;
+                padding:0 10px;
+                font-size: 14px;
+                .option:hover {
+                    background: gray;
+                    color:white;
+                    cursor:pointer;
+                }
             }
         }
         .timeInput {

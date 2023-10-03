@@ -6,6 +6,8 @@ import React,{useEffect, useState} from 'react'
 import SingleCommandPanel from "./common/singleCommandPanel";
 import { InputType } from "./common/singleCommandPanel";
 import fileUploadAPI from "../api/fileUploadAPI";
+import Warning from "./common/warning";
+import Success from "./common/success";
 
 const initCommandData={
     time_tag:"",
@@ -45,7 +47,7 @@ export default function CommandProcedure(){
                 setSymbolOptions(symbolOptions.concat(options1))
                 setSrcOptions(srcOptions.concat(options2))
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             }
         })
 
@@ -89,12 +91,25 @@ export default function CommandProcedure(){
         try {
             Object.keys(form).forEach((key)=>{
                 if(!form[key]){
-                    alert("請輸入" + key);
+                    Warning("請輸入" + key);
                     throw BreakError;
                 }
             })
         }catch(err){
             if (err !== BreakError) throw err;
+            return;
+        }
+
+        let checkResult = true;
+        commandList.forEach(cmd=>{
+            Object.keys(cmd).forEach(key=>{
+                if(!cmd[key]){
+                    Warning(`請輸入 ${key}`);
+                    checkResult=false;
+                }
+            })
+        })
+        if(!checkResult){
             return;
         }
 
@@ -110,13 +125,14 @@ export default function CommandProcedure(){
             commandList
         ).then(result=>{
             if(result.resultStatus === 'SUCCESS'){
-               setFileName(result.resultObj.header.file_name)
-               setGenerationTime(result.resultObj.header.generation_time)
+                Success("發送成功")
+                setFileName(result.resultObj.header.file_name)
+                setGenerationTime(result.resultObj.header.generation_time)
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             }
         }).catch(err=>{
-            alert(err)
+            Warning(err)
         })
 
     }

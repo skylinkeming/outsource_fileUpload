@@ -5,6 +5,8 @@ import Loader from "../common/loader";
 import fileUploadAPI from "../../api/fileUploadAPI";
 import UploadStatus from "./uploadStatus";
 import SortIcon from "../common/sortIcon";
+import Warning from "../common/warning";
+import Success from "../common/success";
 
 const initUploadData = {
     fileName:"", 
@@ -33,7 +35,7 @@ export default function ImageUpload() {
 
     const clickUploadBtn = ()=>{
         if(!file){
-            alert("請先選擇檔案")
+            Warning("請先選擇檔案")
             return;
         }
         setUploadData(initUploadData)
@@ -51,21 +53,21 @@ export default function ImageUpload() {
                     selectedChannel:""
                 })
             } else {
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             }
         }).catch((err)=>{
-            alert(err)
+            Warning(err)
             setLoading(false)
         })
     }
 
     const clickPartitionBtn = ()=>{
         if(!uploadData.fileName){
-            alert("請上傳檔案");
+            Warning("請上傳檔案");
             return;
         }
         if(!uploadData.selectedChannel){
-            alert("請選擇channel")
+            Warning("請選擇channel")
             return;
         }
         setLoading(true)
@@ -76,10 +78,10 @@ export default function ImageUpload() {
                 setSplitFileList(result.resultObj.fileList)
                 setShowSubmitBtn(true);
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             }
         }).catch(err=>{
-            alert(err)
+            Warning(err)
             setLoading(false)
         })
     }
@@ -90,12 +92,13 @@ export default function ImageUpload() {
         fileUploadAPI.notifyUpload(uploadData.imageId).then(result=>{
             setLoading(false)
             if(result.resultStatus === 'SUCCESS'){
+                Success("發送成功")
                 setShowStatusBtn(false)
                 setUploadStatus({
                     ...result.resultObj
                 })
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
                 setShowStatusBtn(true);
                 setShowUploadStatus(true);
                 setUploadStatus({
@@ -104,7 +107,7 @@ export default function ImageUpload() {
             }
             console.log(result)
         }).catch((err)=>{
-            alert(err)
+            Warning(err)
             setLoading(false)
         })
     }

@@ -6,12 +6,14 @@ import 'react-quill/dist/quill.snow.css';
 import 'react-datetime/css/react-datetime.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import fileUploadAPI from "../api/fileUploadAPI";
+import Warning from "./common/warning";
+import SortIcon from "./common/sortIcon";
 
 export default function SOHDisplay(){
     const [maxDateDisabled, setMaxDateDisabled] = useState(false);
-    const [startDate, setStartDate] = useState(new Date());
+    // const [startDate, setStartDate] = useState(new Date());
     const menuBtnArr = ['DSP1 PS','DSP1 PL', 'DSP2 PL', 'DSP2 PS', 'DSP3 PS', 'DSP3 PL', 'DSP4 PS', 'DSP4 PL']
-    const [clickedBtn, setClickedBtn]= useState("");
+    const [clickedBtn, setClickedBtn]= useState("DSP1 PS");
     const [dataList, setDataList] = useState([]);
     const [apiInput, setApiInput] = useState({
         dsp:1,
@@ -37,9 +39,9 @@ export default function SOHDisplay(){
             if(result.resultStatus === 'SUCCESS'){
                 setDataList(result.resultObj)
              }else{
-                 alert(result.message || result.error)
+                Warning(result.message || result.error)
              }
-        }).catch(alert)
+        }).catch(Warning)
     },[apiInput])
  
     return (

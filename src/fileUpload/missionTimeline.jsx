@@ -6,6 +6,8 @@ import React,{useEffect, useState} from 'react'
 import SingleCommandPanel from "./common/singleCommandPanel";
 import { InputType } from "./common/singleCommandPanel";
 import fileUploadAPI from "../api/fileUploadAPI";
+import Warning from "./common/warning";
+import Success from "./common/success";
 
 const initCommandData={
     UTC:"",
@@ -15,7 +17,8 @@ const initCommandData={
     quaternion_2:"",
     quaternion_3:"",
     quaternion_4:"",
-    procedure_name:""
+    procedure_name:"",
+    procedureNameVal:""
 }
 
 const initOption = {
@@ -51,9 +54,9 @@ export default function CommandProcedure(){
                 })
                 setActionOptions([initOption].concat(options1))   
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             }
-        }).catch(alert);
+        }).catch(Warning);
         fileUploadAPI.getProcedureName().then(result=>{
             if(result.resultStatus === 'SUCCESS'){
                 let convertedOptions = result.resultObj.map(data=>{
@@ -64,9 +67,9 @@ export default function CommandProcedure(){
                 })
                 setProcedureNameOptions([initOption].concat(convertedOptions))
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             }
-        }).catch(alert);
+        }).catch(Warning);
 
     },[])
 
@@ -108,7 +111,7 @@ export default function CommandProcedure(){
         try {
             Object.keys(form).forEach((key)=>{
                 if(!form[key]){
-                    alert("請輸入" + key);
+                    Warning("請輸入" + key);
                     throw BreakError;
                 }
             })
@@ -118,10 +121,23 @@ export default function CommandProcedure(){
         }
 
         let cmdInfoIds = [];
+        let checkResult = true;
         commandList.forEach(cmd=>{
+            Object.keys(cmd).forEach(key=>{
+                if(!cmd[key]){
+                    if(key==="procedureNameVal"){
+                        Warning("請選擇procedure_name")
+                    } else {
+                        Warning(`請輸入 ${key}`);
+                    }
+                    checkResult=false;
+                }
+            })
             cmdInfoIds.push(cmd.procedureNameVal)
         })
-    
+        if(!checkResult){
+            return;
+        }
         fileUploadAPI.submitMissionTimeline(
             {
                 originator:form.originator,
@@ -135,13 +151,14 @@ export default function CommandProcedure(){
             cmdInfoIds
         ).then(result=>{
             if(result.resultStatus === 'SUCCESS'){
-               setFileName(result.resultObj.header.file_name)
-               setGenerationTime(result.resultObj.header.generation_time)
+                Success("發送成功")
+                setFileName(result.resultObj.header.file_name)
+                setGenerationTime(result.resultObj.header.generation_time)
             }else{
-                alert(result.message || result.error)
+                Warning(result.message || result.error)
             }
         }).catch(err=>{
-            alert(err)
+            Warning(err)
         })
 
     }
@@ -228,11 +245,11 @@ export default function CommandProcedure(){
                                     {label:"quaternion_2", inputType:InputType.CommandInput, value:data.quaternion_2, options:[]},
                                     {label:"quaternion_3", inputType:InputType.CommandInput, value:data.quaternion_3, options:[]},
                                     {label:"quaternion_4", inputType:InputType.CommandInput, value:data.quaternion_4, options:[]},
-                                    {label:"procedure_name", inputType:InputType.DropdownMenu, value:data.symbol, options:procedureNameOptions},
+                                    {label:"procedure_name", inputType:InputType.CommandInput, value:data.procedure_name, options:procedureNameOptions},
 
                                 ]}
                                 onChange={(updateData)=>{
-                                    console.log(updateData)
+                                    // console.log(updateData)
                                     let cloneCommandList = [...commandList]
                                     let updatedCommand = {...commandList[idx],...updateData};
                                     cloneCommandList[idx] = updatedCommand;
@@ -255,6 +272,7 @@ export default function CommandProcedure(){
 
 
 const StyledCommandProcedure = styled.div`
+    padding-bottom:200px;
     .title {
         font-weight:bold;
         font-size:20px;
