@@ -47,7 +47,7 @@ const CommandInput = ({labelName, value, onChange, options})=>{
                     <div className="options">
                         {options.filter(option=> {
                             if(searchWord && searchWord.length > 0){
-                               return option.configName.includes(searchWord)
+                               return option.configName.toUpperCase().includes(searchWord.toUpperCase())
                             } 
                             return option;
                         }).map(option=>{
