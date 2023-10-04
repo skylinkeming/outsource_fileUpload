@@ -485,7 +485,7 @@ class App extends React.Component {
 					'app ' +
 					(this.state.appGradientEnabled ? 'app-gradient-enabled ' : '') + 
 					(this.state.appHeaderNone ? 'app-without-header ' : '') + 
-					(this.state.appHeaderFixed && !this.state.appHeaderNone ? 'app-header-fixed ' : '') + 
+					// (this.state.appHeaderFixed && !this.state.appHeaderNone ? 'app-header-fixed ' : '') + 
 					(this.state.appSidebarFixed ? 'app-sidebar-fixed ' : '') +
 					(this.state.appSidebarNone ? 'app-without-sidebar ' : '') + 
 					(this.state.appSidebarEnd ? 'app-with-end-sidebar ' : '') +

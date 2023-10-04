@@ -16,7 +16,7 @@ const TimeInput = ({labelName, value, onChange})=>{
             <div className="label">{labelName}</div>
             <div className="inputDiv">
                 <div className="calendar">
-                    <DateTime value={value} inputProps={{ placeholder: 'year/mm/dd' }} closeOnSelect={true} onChange={ handleChange } />
+                    <DateTime value={value} inputProps={{ placeholder: 'year/mm/dd' }} closeOnSelect={true} onChange={ handleChange } utc={true}/>
                 </div>
                 <input disabled type="text" value={value? moment(value).format():""} className="form-control" placeholder="" onChange={onChange}/>
             </div>

@@ -42,7 +42,7 @@ const StyledUploadStatus = styled.div`
     .uploadStatusPanel {
         background:#99dede;
         padding: 10px 20px;
-        min-width: 400px;
+        min-width: 600px;
         font-size: 20px;
         position:absolute;
         top:50%;
@@ -50,7 +50,10 @@ const StyledUploadStatus = styled.div`
         transform:translate(-50%, -50%);
         z-index:2;
         .infoRow {
-            // display:flex;
+            display:flex;
+        }
+        .key {
+            width:150px;
         }
     }
 `;
