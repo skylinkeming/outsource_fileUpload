@@ -1,7 +1,7 @@
 import swal from 'sweetalert';
 
 export default function Warning(text){
-    swal({
+    return swal({
         title: "Error",
         text: text,
         icon: "warning",

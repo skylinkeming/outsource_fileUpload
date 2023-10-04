@@ -7,10 +7,10 @@ export default function UploadStatus({statusInfo, numberOfFile, lostFileList, er
             onClickOutside()
         }}>
             <div className="uploadStatusPanel" onClick={(e)=>{ e.stopPropagation()}}>
-                <div className="infoRow">
+                {/* <div className="infoRow">
                     <div className="key">檔案錯誤狀態:</div>
                     <div className="value">{statusInfo}</div>
-                </div>
+                </div> */}
                 <div className="infoRow">
                     <div className="key">LNM收到檔案數:</div>
                     <div className="value">{numberOfFile}</div>
@@ -32,6 +32,7 @@ export default function UploadStatus({statusInfo, numberOfFile, lostFileList, er
 const StyledUploadStatus = styled.div`
     opacity:${props=>props.show? "1":"0"};
     pointer-events:${props=>props.show? "initial":"none"};
+    background: rgba(0,0,0,0.1);
     width: 100%;
     height: 100%;
     left: 0;
@@ -40,7 +41,9 @@ const StyledUploadStatus = styled.div`
     top: 0;
     transition:0.3s;
     .uploadStatusPanel {
-        background:#99dede;
+        border:5px solid #348fe2;
+        border-radius: 10px;
+        background:white;
         padding: 10px 20px;
         min-width: 600px;
         font-size: 20px;
@@ -50,10 +53,9 @@ const StyledUploadStatus = styled.div`
         transform:translate(-50%, -50%);
         z-index:2;
         .infoRow {
-            display:flex;
         }
         .key {
-            width:150px;
+            font-weight: bold;
         }
     }
 `;

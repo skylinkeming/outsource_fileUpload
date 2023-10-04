@@ -98,11 +98,12 @@ export default function ImageUpload() {
                     ...result.resultObj
                 })
             }else{
-                Warning(result.message || result.error)
-                setShowStatusBtn(true);
-                setShowUploadStatus(true);
                 setUploadStatus({
                     ...result.resultObj, statusInfo:result.message || result.error
+                })
+                Warning(result.message || result.error).then(result=>{
+                    setShowStatusBtn(true);
+                    setShowUploadStatus(true);
                 })
             }
             console.log(result)
@@ -188,7 +189,7 @@ export default function ImageUpload() {
                     }
                     <div className="btnDiv p-3">
                         {showStatusBtn && 
-                            <button type="button" className="btn btn-primary me-3 mb-1" onClick={clickUploadStatusFromLNM}>upload status from LNM</button>
+                            <button type="button" className="btn statusBtn me-3 mb-1" onClick={clickUploadStatusFromLNM}>upload status from LNM</button>
                         }
                         {showSubmitBtn && 
                             <button type="button" className="btn btn-green me-3 mb-1" onClick={clickSubmitBtn}>Submit</button>
@@ -241,6 +242,10 @@ const StyledImageUpload = styled.div`
     position:relative;
     .title {
         font-size:18px;
+    }
+    .statusBtn {
+        background:#348fe2;
+        color:white;
     }
     .fileInfo {
         border: 1px solid #d3d3d3;
