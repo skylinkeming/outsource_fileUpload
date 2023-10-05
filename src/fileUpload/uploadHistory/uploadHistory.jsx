@@ -56,7 +56,7 @@ export default function UploadHistory() {
             onChange={(e) => {
                 setSearchword(e.target.value);
             }}
-            onKeyDown={(e)=>{
+            onKeyUp={(e)=>{
                 if(e.key==='Enter'){
                     clickSearchBtn()
                 }
