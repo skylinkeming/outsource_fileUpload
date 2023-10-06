@@ -60,6 +60,13 @@ const fileUploadAPI = {
             headers: headers
         }).then(res => res.json());
     },
+    getXMLHeader: async () => {
+        return fetch(url + "/configs/xmlheader", {
+            method: "POST",
+            body: JSON.stringify({}),
+            headers: headers
+        }).then(res => res.json());
+    },
     getConfigSelect: async (configType) => {
         const body = {
             configType: configType
@@ -93,7 +100,7 @@ const fileUploadAPI = {
         const requestBody = {
             header: header,
             body: body,
-            cmdInfoIds:cmdInfoIds
+            cmdInfoIds: cmdInfoIds
         }
         return fetch(url + "/mtl/submit", {
             method: "POST",
@@ -101,7 +108,7 @@ const fileUploadAPI = {
             headers: headers
         }).then(res => res.json());
     },
-    getSOHInfo: async (sohType,dsp) => {
+    getSOHInfo: async (sohType, dsp) => {
         const requestBody = {
             sohType: sohType,
             dsp: dsp,

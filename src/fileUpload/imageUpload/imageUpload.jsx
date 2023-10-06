@@ -56,7 +56,7 @@ export default function ImageUpload() {
                 Warning(result.message || result.error)
             }
         }).catch((err)=>{
-            Warning(err)
+            Warning(err.toString())
             setLoading(false)
         })
     }
@@ -70,9 +70,9 @@ export default function ImageUpload() {
             Warning("請選擇channel")
             return;
         }
-        setLoading(true)
+        setShowStatusBtn(false);
+        setLoading(true);
         fileUploadAPI.splitFile(uploadData.imageId, uploadData.selectedChannel).then(result=>{
-            console.log(result);
             setLoading(false)
             if(result.resultStatus === 'SUCCESS'){
                 setSplitFileList(result.resultObj.fileList)
@@ -81,7 +81,7 @@ export default function ImageUpload() {
                 Warning(result.message || result.error)
             }
         }).catch(err=>{
-            Warning(err)
+            Warning(err.toString())
             setLoading(false)
         })
     }
@@ -106,9 +106,8 @@ export default function ImageUpload() {
                     setShowUploadStatus(true);
                 })
             }
-            console.log(result)
         }).catch((err)=>{
-            Warning(err)
+            Warning(err.toString())
             setLoading(false)
         })
     }

@@ -36,6 +36,18 @@ export default function CommandProcedure() {
   ]);
 
   useEffect(() => {
+    fileUploadAPI.getXMLHeader().then(result=>{
+      if (result.resultStatus === "SUCCESS") {
+        setForm({
+          ...form,
+          ...result.resultObj
+        })
+      }else{
+        Warning(result.message || result.error);
+      }
+    })
+    .catch((err)=>{ Warning(err.toString())});
+
     fileUploadAPI.getConfigSelect("cmd_proc").then((result) => {
       if (result.resultStatus === "SUCCESS") {
         let options1 = [];
@@ -52,7 +64,8 @@ export default function CommandProcedure() {
       } else {
         Warning(result.message || result.error);
       }
-    });
+    })
+    .catch((err)=>{ Warning(err.toString())});
   }, []);
 
   const maxDateRange = (current) => {
@@ -133,7 +146,7 @@ export default function CommandProcedure() {
         }
       })
       .catch((err) => {
-        Warning(err);
+        Warning(err.toString());
       });
   };
 
@@ -146,49 +159,45 @@ export default function CommandProcedure() {
           <div className="inputs">
             <CustomInput
               label="originator"
+              value={form.originator}
               onChange={(e) => {
-                setForm({
-                  ...form,
-                  originator: e.target.value,
-                });
+                return false;
               }}
             />
             <CustomInput
               label="destination"
+              value={form.destination}
               onChange={(e) => {
-                setForm({
-                  ...form,
-                  destination: e.target.value,
-                });
+                return false;
               }}
             />
             <CustomInput
               label="satellite_name"
+              value={form.satellite_name}
               onChange={(e) => {
-                setForm({
-                  ...form,
-                  satellite_name: e.target.value,
-                });
+                return false;
               }}
             />
             <CustomInput
               label="generation_time"
               value={generationTime}
-              onChange={(e) => {}}
+              onChange={(e) => {
+                return false;
+              }}
             />
             <CustomInput
               label="instrument"
+              value={form.instrument}
               onChange={(e) => {
-                setForm({
-                  ...form,
-                  instrument: e.target.value,
-                });
+                return false;
               }}
             />
             <CustomInput
               label="file_name"
               value={fileName}
-              onChange={(e) => {}}
+              onChange={(e) => {
+                return false;
+              }}
             />
           </div>
           <div>
@@ -291,7 +300,6 @@ export default function CommandProcedure() {
                   },
                 ]}
                 onChange={(updateData) => {
-                  console.log(updateData);
                   let cloneCommandList = [...commandList];
                   let updatedCommand = { ...commandList[idx], ...updateData };
                   cloneCommandList[idx] = updatedCommand;

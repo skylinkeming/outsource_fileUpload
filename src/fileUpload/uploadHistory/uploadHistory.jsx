@@ -17,7 +17,6 @@ export default function UploadHistory() {
         fileUploadAPI
           .getFileList()
           .then((result) => {
-            console.log(result);
             if(result.resultStatus === 'SUCCESS'){
                 setResultList(result.resultObj.list)
             }else{
@@ -26,7 +25,7 @@ export default function UploadHistory() {
             }
           })
           .catch((err) => {
-            Warning(err);
+            Warning(err.toString());
           });
     }
   }, [searchword]);
@@ -42,7 +41,7 @@ export default function UploadHistory() {
             }
         })
         .catch((err) => {
-          Warning(err);
+          Warning(err.toString());
     });
   }
 

@@ -43,6 +43,18 @@ export default function CommandProcedure() {
   ]);
 
   useEffect(() => {
+    fileUploadAPI.getXMLHeader().then(result=>{
+      if (result.resultStatus === "SUCCESS") {
+        setForm({
+          ...form,
+          ...result.resultObj
+        })
+      }else{
+        Warning(result.message || result.error);
+      }
+    })
+    .catch((err)=>{ Warning(err.toString())});
+
     fileUploadAPI
       .getConfigSelect("mtl")
       .then((result) => {
@@ -74,7 +86,8 @@ export default function CommandProcedure() {
           Warning(result.message || result.error);
         }
       })
-      .catch(Warning);
+      .catch((err)=>{ Warning(err.toString())});
+
   }, []);
 
   const maxDateRange = (current) => {
@@ -125,7 +138,7 @@ export default function CommandProcedure() {
     let checkResult = true;
     commandList.forEach((cmd) => {
       Object.keys(cmd).forEach((key) => {
-        if (!cmd[key]) {
+        if (!cmd[key] && key.indexOf("quaternion") < 0) {
           if (key === "procedureNameVal") {
             Warning("請選擇procedure_name");
           } else {
@@ -161,7 +174,7 @@ export default function CommandProcedure() {
           Warning(result.message || result.error);
         }
       })
-      .catch(Warning);
+      .catch((err)=>{ Warning(err.toString())});
   };
 
   return (
@@ -173,39 +186,31 @@ export default function CommandProcedure() {
           <div className="inputs">
             <CustomInput
               label="originator"
+              value={form.originator}
               onChange={(e) => {
-                setForm({
-                  ...form,
-                  originator: e.target.value,
-                });
+                return false;
               }}
             />
             <CustomInput
               label="destination"
+              value={form.destination}
               onChange={(e) => {
-                setForm({
-                  ...form,
-                  destination: e.target.value,
-                });
+                return false;
               }}
             />
             <CustomInput
               label="satellite_name"
+              value={form.satellite_name}
               onChange={(e) => {
-                setForm({
-                  ...form,
-                  satellite_name: e.target.value,
-                });
+                return false;
               }}
             />
             <CustomInput label="generation_time" value={generationTime} />
             <CustomInput
               label="instrument"
+              value={form.instrument}
               onChange={(e) => {
-                setForm({
-                  ...form,
-                  instrument: e.target.value,
-                });
+                return false;
               }}
             />
             <CustomInput label="file_name" value={fileName} />

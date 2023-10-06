@@ -29,7 +29,7 @@ export default function UploadStatus({statusInfo, numberOfFile, lostFileList, er
 }
 
 
-const StyledUploadStatus = styled.div`
+const StyledUploadStatus = styled.div.attrs(props=>props)`
     opacity:${props=>props.show? "1":"0"};
     pointer-events:${props=>props.show? "initial":"none"};
     background: rgba(0,0,0,0.1);
